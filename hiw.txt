@@ -1,0 +1,2 @@
+server/response => controller/service => repo => models
+   V                  C                    M
