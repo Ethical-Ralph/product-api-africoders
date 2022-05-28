@@ -6,7 +6,7 @@ exports.create = async (data) => {
       throw new Error("Validation error");
     }
 
-    const product = productRepo.create(data);
+    const product = await productRepo.create(data);
 
     return product;
   } catch (error) {
