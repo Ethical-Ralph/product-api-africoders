@@ -27,7 +27,7 @@ userRouter.post("/signup", async (req, res, next) => {
     res.json({
       status: 201,
       data: user,
-      message: "User fetched successfully",
+      message: "User created successfully",
     });
   } catch (error) {
     next(error);

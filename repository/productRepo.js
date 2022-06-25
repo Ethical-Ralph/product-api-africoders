@@ -27,3 +27,8 @@ exports.updateProduct = async (id, { name, category, price, quantity }) => {
 exports.deleteProduct = async (id) => {
   return ProductModel.deleteOne(id);
 };
+
+exports.getAll = async () => {
+  const products = await ProductModel.find();
+  return products;
+};

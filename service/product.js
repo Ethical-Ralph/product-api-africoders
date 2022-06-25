@@ -13,3 +13,13 @@ exports.create = async (data) => {
     throw error;
   }
 };
+
+exports.getAll = async () => {
+  try {
+    const products = await productRepo.getAll();
+
+    return products;
+  } catch (error) {
+    throw error;
+  }
+};
