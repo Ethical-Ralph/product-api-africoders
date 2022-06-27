@@ -1,5 +1,6 @@
-const Cart = require("../models/cart");
-const Product = require("../models/Product");
+const Cart = require('../models/cart');
+const Product = require('../models/Product');
+const { getRedisData, setRedisData } = require('../utils/redis');
 
 // check is in cart
 // if not add to product array
@@ -11,7 +12,7 @@ exports.addToCart = async ({
   try {
     const productExist = await Product.findById(cartData.productId);
     if (!productExist) {
-      throw new Error("Product not found");
+      throw new Error('Product not found');
     }
 
     const cart = await Cart.findOne({ userId });
@@ -49,12 +50,19 @@ exports.addToCart = async ({
 
 exports.getCart = async (userId) => {
   try {
-    const cart = await Cart.findOne({ userId }).populate({
-      path: "products.product",
-      select: "-__v -quantity",
-    });
+    const cachedUserCart = await getRedisData(`${userId}_cart`);
 
-    return cart || {};
+    if (cachedUserCart) {
+      return cachedUserCart;
+    } else {
+      const cart = await Cart.findOne({ userId }).populate({
+        path: 'products.product',
+        select: '-__v -quantity',
+      });
+
+      setRedisData(`${userId}_cart`, products);
+      return cart || {};
+    }
   } catch (error) {
     throw error;
   }
@@ -65,7 +73,7 @@ exports.removeFromCart = async ({ userId, productId }) => {
     const cart = await Cart.findOne({ userId });
 
     if (!cart) {
-      throw new Error("Cart not found");
+      throw new Error('Cart not found');
     }
 
     const product = cart.products.find(
@@ -73,7 +81,7 @@ exports.removeFromCart = async ({ userId, productId }) => {
     );
 
     if (!product) {
-      throw new Error("Product not found");
+      throw new Error('Product not found');
     }
 
     if (product.quantity == 1) {
@@ -95,7 +103,7 @@ exports.deleteCart = async (userId) => {
     const cart = await Cart.findOne({ userId });
 
     if (!cart) {
-      throw new Error("Cart not found");
+      throw new Error('Cart not found');
     }
 
     await cart.remove();
